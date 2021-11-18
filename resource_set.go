@@ -8,9 +8,9 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
-type resourceListType struct{}
+type resourceSetType struct{}
 
-func (r resourceListType) GetSchema(_ context.Context) (tfsdk.Schema, diag.Diagnostics) {
+func (r resourceSetType) GetSchema(_ context.Context) (tfsdk.Schema, diag.Diagnostics) {
 	return tfsdk.Schema{
 		Attributes: map[string]tfsdk.Attribute{
 			"name": {
@@ -19,31 +19,31 @@ func (r resourceListType) GetSchema(_ context.Context) (tfsdk.Schema, diag.Diagn
 			},
 			"values": {
 				Optional:   true,
-				Attributes: tfsdk.ListNestedAttributes(valueAttributes, tfsdk.ListNestedAttributesOptions{}),
+				Attributes: tfsdk.SetNestedAttributes(valueAttributes, tfsdk.SetNestedAttributesOptions{}),
 			},
 			"sensitive_values": {
 				Optional:   true,
 				Sensitive:  true,
-				Attributes: tfsdk.ListNestedAttributes(valueAttributes, tfsdk.ListNestedAttributesOptions{}),
+				Attributes: tfsdk.SetNestedAttributes(valueAttributes, tfsdk.SetNestedAttributesOptions{}),
 			},
 		},
 	}, nil
 }
 
-func (r resourceListType) NewResource(_ context.Context, _ tfsdk.Provider) (tfsdk.Resource, diag.Diagnostics) {
-	return resourceList{}, nil
+func (r resourceSetType) NewResource(_ context.Context, _ tfsdk.Provider) (tfsdk.Resource, diag.Diagnostics) {
+	return resourceSet{}, nil
 }
 
-type resourceList struct{}
+type resourceSet struct{}
 
-type List struct {
+type Set struct {
 	Name            string  `tfsdk:"name"`
 	Values          []Value `tfsdk:"values"`
 	SensitiveValues []Value `tfsdk:"sensitive_values"`
 }
 
-func (r resourceList) Create(ctx context.Context, req tfsdk.CreateResourceRequest, resp *tfsdk.CreateResourceResponse) {
-	var f List
+func (r resourceSet) Create(ctx context.Context, req tfsdk.CreateResourceRequest, resp *tfsdk.CreateResourceResponse) {
+	var f Set
 	diags := req.Plan.Get(ctx, &f)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
@@ -57,11 +57,11 @@ func (r resourceList) Create(ctx context.Context, req tfsdk.CreateResourceReques
 	}
 }
 
-func (r resourceList) Read(_ context.Context, _ tfsdk.ReadResourceRequest, _ *tfsdk.ReadResourceResponse) {
+func (r resourceSet) Read(_ context.Context, _ tfsdk.ReadResourceRequest, _ *tfsdk.ReadResourceResponse) {
 }
 
-func (r resourceList) Update(ctx context.Context, req tfsdk.UpdateResourceRequest, resp *tfsdk.UpdateResourceResponse) {
-	var f List
+func (r resourceSet) Update(ctx context.Context, req tfsdk.UpdateResourceRequest, resp *tfsdk.UpdateResourceResponse) {
+	var f Set
 	diags := req.Plan.Get(ctx, &f)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
@@ -75,10 +75,10 @@ func (r resourceList) Update(ctx context.Context, req tfsdk.UpdateResourceReques
 	}
 }
 
-func (r resourceList) Delete(ctx context.Context, req tfsdk.DeleteResourceRequest, resp *tfsdk.DeleteResourceResponse) {
+func (r resourceSet) Delete(ctx context.Context, req tfsdk.DeleteResourceRequest, resp *tfsdk.DeleteResourceResponse) {
 	resp.State.RemoveResource(ctx)
 }
 
-func (r resourceList) ImportState(ctx context.Context, req tfsdk.ImportResourceStateRequest, resp *tfsdk.ImportResourceStateResponse) {
+func (r resourceSet) ImportState(ctx context.Context, req tfsdk.ImportResourceStateRequest, resp *tfsdk.ImportResourceStateResponse) {
 	tfsdk.ResourceImportStateNotImplemented(ctx, "", resp)
 }

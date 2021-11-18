@@ -37,7 +37,10 @@ func (p *provider) Configure(_ context.Context, _ tfsdk.ConfigureProviderRequest
 
 func (p *provider) GetResources(_ context.Context) (map[string]tfsdk.ResourceType, diag.Diagnostics) {
 	return map[string]tfsdk.ResourceType{
-		"nested_list": resourceListType{},
+		"nested_list":   resourceListType{},
+		"nested_map":    resourceMapType{},
+		"nested_set":    resourceSetType{},
+		"nested_single": resourceSingleType{},
 	}, nil
 }
 
