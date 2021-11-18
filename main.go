@@ -7,6 +7,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
 func main() {
@@ -21,7 +22,14 @@ func main() {
 type provider struct{}
 
 func (p *provider) GetSchema(_ context.Context) (tfsdk.Schema, diag.Diagnostics) {
-	return tfsdk.Schema{}, nil
+	return tfsdk.Schema{
+		Attributes: map[string]tfsdk.Attribute{
+			"dummy": {
+				Type:     types.StringType,
+				Optional: true,
+			},
+		},
+	}, nil
 }
 
 func (p *provider) Configure(_ context.Context, _ tfsdk.ConfigureProviderRequest, _ *tfsdk.ConfigureProviderResponse) {
