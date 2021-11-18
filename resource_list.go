@@ -117,18 +117,18 @@ func (r resourceListType) NewResource(_ context.Context, _ tfsdk.Provider) (tfsd
 type resourceList struct{}
 
 type Nested struct {
-	String    string  `tfsdk:"string"`
-	Number    float64 `tfsdk:"number"`
-	Bool      bool    `tfsdk:"bool"`
-	Sensitive string  `tfsdk:"sensitive"`
+	String    *string  `tfsdk:"string"`
+	Number    *float64 `tfsdk:"number"`
+	Bool      *bool    `tfsdk:"bool"`
+	Sensitive *string  `tfsdk:"sensitive"`
 }
 
 type Value struct {
-	String    string  `tfsdk:"string"`
-	Number    float64 `tfsdk:"number"`
-	Bool      bool    `tfsdk:"bool"`
-	Sensitive string  `tfsdk:"sensitive"`
-	Nested    Nested  `tfsdk:"nested"`
+	String    *string  `tfsdk:"string"`
+	Number    *float64 `tfsdk:"number"`
+	Bool      *bool    `tfsdk:"bool"`
+	Sensitive *string  `tfsdk:"sensitive"`
+	Nested    *Nested  `tfsdk:"nested"`
 }
 
 type List struct {
