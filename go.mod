@@ -2,10 +2,11 @@ module github.com/alisdair/terraform-provider-nested
 
 go 1.17
 
-require github.com/hashicorp/terraform-plugin-framework v0.4.3-0.20211029131226-08866827f0ae
+require github.com/hashicorp/terraform-plugin-framework v0.4.3-0.20211111174753-33080f200a6d
 
 require (
 	github.com/golang/protobuf v1.4.2 // indirect
+	github.com/google/go-cmp v0.5.6 // indirect
 	github.com/hashicorp/go-hclog v0.0.0-20180709165350-ff2cf002a8dd // indirect
 	github.com/hashicorp/go-plugin v1.3.0 // indirect
 	github.com/hashicorp/terraform-plugin-go v0.4.0 // indirect
