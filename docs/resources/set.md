@@ -17,33 +17,33 @@ description: |-
 
 ### Required
 
-- **name** (String)
+- `name` (String)
 
 ### Optional
 
-- **sensitive_values** (Attributes Set, Sensitive) (see [below for nested schema](#nestedatt--sensitive_values))
-- **values** (Attributes Set) (see [below for nested schema](#nestedatt--values))
+- `sensitive_values` (Attributes Set, Sensitive) (see [below for nested schema](#nestedatt--sensitive_values))
+- `values` (Attributes Set) (see [below for nested schema](#nestedatt--values))
 
 <a id="nestedatt--sensitive_values"></a>
 ### Nested Schema for `sensitive_values`
 
 Optional:
 
-- **bool** (Boolean)
-- **nested** (Attributes) (see [below for nested schema](#nestedatt--sensitive_values--nested))
-- **number** (Number)
-- **sensitive** (String, Sensitive)
-- **string** (String)
+- `bool` (Boolean)
+- `nested` (Attributes) (see [below for nested schema](#nestedatt--sensitive_values--nested))
+- `number` (Number)
+- `sensitive` (String, Sensitive)
+- `string` (String)
 
 <a id="nestedatt--sensitive_values--nested"></a>
 ### Nested Schema for `sensitive_values.nested`
 
 Optional:
 
-- **bool** (Boolean)
-- **number** (Number)
-- **sensitive** (String, Sensitive)
-- **string** (String)
+- `bool` (Boolean)
+- `number` (Number)
+- `sensitive` (String, Sensitive)
+- `string` (String)
 
 
 
@@ -52,20 +52,20 @@ Optional:
 
 Optional:
 
-- **bool** (Boolean)
-- **nested** (Attributes) (see [below for nested schema](#nestedatt--values--nested))
-- **number** (Number)
-- **sensitive** (String, Sensitive)
-- **string** (String)
+- `bool` (Boolean)
+- `nested` (Attributes) (see [below for nested schema](#nestedatt--values--nested))
+- `number` (Number)
+- `sensitive` (String, Sensitive)
+- `string` (String)
 
 <a id="nestedatt--values--nested"></a>
 ### Nested Schema for `values.nested`
 
 Optional:
 
-- **bool** (Boolean)
-- **number** (Number)
-- **sensitive** (String, Sensitive)
-- **string** (String)
+- `bool` (Boolean)
+- `number` (Number)
+- `sensitive` (String, Sensitive)
+- `string` (String)
 
 

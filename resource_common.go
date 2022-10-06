@@ -61,3 +61,15 @@ var valueAttributes = map[string]tfsdk.Attribute{
 		}),
 	},
 }
+
+var valueContainerAttributes = map[string]tfsdk.Attribute{
+	"value": {
+		Optional:   true,
+		Attributes: tfsdk.SingleNestedAttributes(valueAttributes),
+	},
+	"sensitive_value": {
+		Optional:   true,
+		Sensitive:  true,
+		Attributes: tfsdk.SingleNestedAttributes(valueAttributes),
+	},
+}
