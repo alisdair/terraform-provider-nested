@@ -41,6 +41,7 @@ func (p *provider) GetResources(_ context.Context) (map[string]tfsdk.ResourceTyp
 		"nested_map":    resourceMapType{},
 		"nested_set":    resourceSetType{},
 		"nested_single": resourceSingleType{},
+		"nested_blocks": resourceBlocksType{},
 	}, nil
 }
 
