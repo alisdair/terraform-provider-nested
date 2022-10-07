@@ -9,16 +9,81 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
+var valueContainerBlocks = map[string]tfsdk.Block{
+	"nested_list": {
+		NestingMode: tfsdk.BlockNestingModeList,
+		Attributes:  valueContainerAttributes,
+		Blocks:      valueContainerBlocks1,
+	},
+	"nested_set": {
+		NestingMode: tfsdk.BlockNestingModeSet,
+		Attributes:  valueContainerAttributes,
+		Blocks:      valueContainerBlocks1,
+	},
+}
+
+var valueContainerBlocks1 = map[string]tfsdk.Block{
+	"nested_list": {
+		NestingMode: tfsdk.BlockNestingModeList,
+		Attributes:  valueContainerAttributes,
+		Blocks:      valueContainerBlocks2,
+	},
+	"nested_set": {
+		NestingMode: tfsdk.BlockNestingModeSet,
+		Attributes:  valueContainerAttributes,
+		Blocks:      valueContainerBlocks2,
+	},
+}
+
+var valueContainerBlocks2 = map[string]tfsdk.Block{
+	"nested_list": {
+		NestingMode: tfsdk.BlockNestingModeList,
+		Attributes:  valueContainerAttributes,
+		Blocks:      valueContainerBlocks3,
+	},
+	"nested_set": {
+		NestingMode: tfsdk.BlockNestingModeSet,
+		Attributes:  valueContainerAttributes,
+		Blocks:      valueContainerBlocks3,
+	},
+}
+
+var valueContainerBlocks3 = map[string]tfsdk.Block{
+	"nested_list": {
+		NestingMode: tfsdk.BlockNestingModeList,
+		Attributes:  valueContainerAttributes,
+		Blocks:      valueContainerBlocks4,
+	},
+	"nested_set": {
+		NestingMode: tfsdk.BlockNestingModeSet,
+		Attributes:  valueContainerAttributes,
+		Blocks:      valueContainerBlocks4,
+	},
+}
+
+var valueContainerBlocks4 = map[string]tfsdk.Block{
+	"nested_list": {
+		NestingMode: tfsdk.BlockNestingModeList,
+		Attributes:  valueContainerAttributes,
+	},
+	"nested_set": {
+		NestingMode: tfsdk.BlockNestingModeSet,
+		Attributes:  valueContainerAttributes,
+	},
+}
+
 func (r *resourceBlocks) GetSchema(_ context.Context) (tfsdk.Schema, diag.Diagnostics) {
 	return tfsdk.Schema{
 		Blocks: map[string]tfsdk.Block{
 			"list": {
 				NestingMode: tfsdk.BlockNestingModeList,
 				Attributes:  valueContainerAttributes,
+				Blocks:      valueContainerBlocks,
 			},
 			"set": {
 				NestingMode: tfsdk.BlockNestingModeSet,
 				Attributes:  valueContainerAttributes,
+				Blocks:      valueContainerBlocks,
 			},
 		},
 		Attributes: map[string]tfsdk.Attribute{
@@ -32,9 +97,37 @@ func (r *resourceBlocks) GetSchema(_ context.Context) (tfsdk.Schema, diag.Diagno
 
 type resourceBlocks struct{}
 
-type ValueContainer struct {
+type ValueContainerNested1 struct {
+	NestedLists    []ValueContainerNested2 `tfsdk:"nested_list"`
+	NestedSets     []ValueContainerNested2 `tfsdk:"nested_set"`
+	Value          *Value                  `tfsdk:"value"`
+	SensitiveValue *Value                  `tfsdk:"sensitive_value"`
+}
+
+type ValueContainerNested2 struct {
+	NestedLists    []ValueContainerNested3 `tfsdk:"nested_list"`
+	NestedSets     []ValueContainerNested3 `tfsdk:"nested_set"`
+	Value          *Value                  `tfsdk:"value"`
+	SensitiveValue *Value                  `tfsdk:"sensitive_value"`
+}
+
+type ValueContainerNested3 struct {
+	NestedLists    []ValueContainerNested4 `tfsdk:"nested_list"`
+	NestedSets     []ValueContainerNested4 `tfsdk:"nested_set"`
+	Value          *Value                  `tfsdk:"value"`
+	SensitiveValue *Value                  `tfsdk:"sensitive_value"`
+}
+
+type ValueContainerNested4 struct {
 	Value          *Value `tfsdk:"value"`
 	SensitiveValue *Value `tfsdk:"sensitive_value"`
+}
+
+type ValueContainer struct {
+	NestedLists    []ValueContainerNested1 `tfsdk:"nested_list"`
+	NestedSets     []ValueContainerNested1 `tfsdk:"nested_set"`
+	Value          *Value                  `tfsdk:"value"`
+	SensitiveValue *Value                  `tfsdk:"sensitive_value"`
 }
 
 type Blocks struct {
