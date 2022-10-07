@@ -4,13 +4,12 @@ import (
 	"context"
 
 	"github.com/hashicorp/terraform-plugin-framework/diag"
+	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
-type resourceSingleType struct{}
-
-func (r resourceSingleType) GetSchema(_ context.Context) (tfsdk.Schema, diag.Diagnostics) {
+func (r *resourceSingle) GetSchema(_ context.Context) (tfsdk.Schema, diag.Diagnostics) {
 	return tfsdk.Schema{
 		Attributes: map[string]tfsdk.Attribute{
 			"name": {
@@ -30,11 +29,11 @@ func (r resourceSingleType) GetSchema(_ context.Context) (tfsdk.Schema, diag.Dia
 	}, nil
 }
 
-func (r resourceSingleType) NewResource(_ context.Context, _ tfsdk.Provider) (tfsdk.Resource, diag.Diagnostics) {
-	return resourceSingle{}, nil
-}
-
 type resourceSingle struct{}
+
+func newResourceSingle() resource.Resource {
+	return &resourceSingle{}
+}
 
 type Single struct {
 	Name           string `tfsdk:"name"`
@@ -42,7 +41,11 @@ type Single struct {
 	SensitiveValue *Value `tfsdk:"sensitive_value"`
 }
 
-func (r resourceSingle) Create(ctx context.Context, req tfsdk.CreateResourceRequest, resp *tfsdk.CreateResourceResponse) {
+func (r *resourceSingle) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+	resp.TypeName = req.ProviderTypeName + "_single"
+}
+
+func (r *resourceSingle) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
 	var f Single
 	diags := req.Plan.Get(ctx, &f)
 	resp.Diagnostics.Append(diags...)
@@ -57,10 +60,10 @@ func (r resourceSingle) Create(ctx context.Context, req tfsdk.CreateResourceRequ
 	}
 }
 
-func (r resourceSingle) Read(_ context.Context, _ tfsdk.ReadResourceRequest, _ *tfsdk.ReadResourceResponse) {
+func (r *resourceSingle) Read(_ context.Context, _ resource.ReadRequest, _ *resource.ReadResponse) {
 }
 
-func (r resourceSingle) Update(ctx context.Context, req tfsdk.UpdateResourceRequest, resp *tfsdk.UpdateResourceResponse) {
+func (r *resourceSingle) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 	var f Single
 	diags := req.Plan.Get(ctx, &f)
 	resp.Diagnostics.Append(diags...)
@@ -75,10 +78,6 @@ func (r resourceSingle) Update(ctx context.Context, req tfsdk.UpdateResourceRequ
 	}
 }
 
-func (r resourceSingle) Delete(ctx context.Context, req tfsdk.DeleteResourceRequest, resp *tfsdk.DeleteResourceResponse) {
+func (r *resourceSingle) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
 	resp.State.RemoveResource(ctx)
-}
-
-func (r resourceSingle) ImportState(ctx context.Context, req tfsdk.ImportResourceStateRequest, resp *tfsdk.ImportResourceStateResponse) {
-	tfsdk.ResourceImportStateNotImplemented(ctx, "", resp)
 }

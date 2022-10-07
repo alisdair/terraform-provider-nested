@@ -4,13 +4,12 @@ import (
 	"context"
 
 	"github.com/hashicorp/terraform-plugin-framework/diag"
+	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
-type resourceBlocksType struct{}
-
-func (r resourceBlocksType) GetSchema(_ context.Context) (tfsdk.Schema, diag.Diagnostics) {
+func (r *resourceBlocks) GetSchema(_ context.Context) (tfsdk.Schema, diag.Diagnostics) {
 	return tfsdk.Schema{
 		Blocks: map[string]tfsdk.Block{
 			"list": {
@@ -31,10 +30,6 @@ func (r resourceBlocksType) GetSchema(_ context.Context) (tfsdk.Schema, diag.Dia
 	}, nil
 }
 
-func (r resourceBlocksType) NewResource(_ context.Context, _ tfsdk.Provider) (tfsdk.Resource, diag.Diagnostics) {
-	return resourceBlocks{}, nil
-}
-
 type resourceBlocks struct{}
 
 type ValueContainer struct {
@@ -48,7 +43,19 @@ type Blocks struct {
 	Sets  []ValueContainer `tfsdk:"set"`
 }
 
-func (r resourceBlocks) Create(ctx context.Context, req tfsdk.CreateResourceRequest, resp *tfsdk.CreateResourceResponse) {
+func newResourceBlock() resource.Resource {
+	return &resourceBlocks{}
+}
+
+func (r *resourceBlocks) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+	resp.TypeName = req.ProviderTypeName + "_blocks"
+}
+
+func (r *resourceBlocks) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
+	// NOOP
+}
+
+func (r *resourceBlocks) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
 	var f Blocks
 	diags := req.Plan.Get(ctx, &f)
 	resp.Diagnostics.Append(diags...)
@@ -63,10 +70,10 @@ func (r resourceBlocks) Create(ctx context.Context, req tfsdk.CreateResourceRequ
 	}
 }
 
-func (r resourceBlocks) Read(_ context.Context, _ tfsdk.ReadResourceRequest, _ *tfsdk.ReadResourceResponse) {
+func (r *resourceBlocks) Read(_ context.Context, _ resource.ReadRequest, _ *resource.ReadResponse) {
 }
 
-func (r resourceBlocks) Update(ctx context.Context, req tfsdk.UpdateResourceRequest, resp *tfsdk.UpdateResourceResponse) {
+func (r *resourceBlocks) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 	var f Blocks
 	diags := req.Plan.Get(ctx, &f)
 	resp.Diagnostics.Append(diags...)
@@ -81,10 +88,6 @@ func (r resourceBlocks) Update(ctx context.Context, req tfsdk.UpdateResourceRequ
 	}
 }
 
-func (r resourceBlocks) Delete(ctx context.Context, req tfsdk.DeleteResourceRequest, resp *tfsdk.DeleteResourceResponse) {
+func (r *resourceBlocks) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
 	resp.State.RemoveResource(ctx)
-}
-
-func (r resourceBlocks) ImportState(ctx context.Context, req tfsdk.ImportResourceStateRequest, resp *tfsdk.ImportResourceStateResponse) {
-	tfsdk.ResourceImportStateNotImplemented(ctx, "", resp)
 }

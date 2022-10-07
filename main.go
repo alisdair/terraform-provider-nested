@@ -5,23 +5,35 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
+	"github.com/hashicorp/terraform-plugin-framework/provider"
+	"github.com/hashicorp/terraform-plugin-framework/providerserver"
+	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
 func main() {
-	if err := tfsdk.Serve(context.Background(), func() tfsdk.Provider { return &provider{} }, tfsdk.ServeOpts{
-		Name: "nested",
-	}); err != nil {
-		fmt.Fprintf(os.Stderr, "Failed to start provider: %v\n", err)
+	opts := providerserver.ServeOpts{
+		Address: "registry.terraform.io/alisdair/nested",
+	}
+
+	err := providerserver.Serve(context.Background(), func() provider.Provider {
+		return &nestedProvider{}
+	}, opts)
+
+	if err != nil {
+		fmt.Println(err.Error())
 		os.Exit(1)
 	}
 }
 
-type provider struct{}
+type nestedProvider struct{}
 
-func (p *provider) GetSchema(_ context.Context) (tfsdk.Schema, diag.Diagnostics) {
+var _ provider.Provider = &nestedProvider{}
+
+func (p *nestedProvider) GetSchema(_ context.Context) (tfsdk.Schema, diag.Diagnostics) {
 	return tfsdk.Schema{
 		Attributes: map[string]tfsdk.Attribute{
 			"dummy": {
@@ -32,19 +44,23 @@ func (p *provider) GetSchema(_ context.Context) (tfsdk.Schema, diag.Diagnostics)
 	}, nil
 }
 
-func (p *provider) Configure(_ context.Context, _ tfsdk.ConfigureProviderRequest, _ *tfsdk.ConfigureProviderResponse) {
+func (p *nestedProvider) Metadata(ctx context.Context, req provider.MetadataRequest, resp *provider.MetadataResponse) {
+	resp.TypeName = "nested"
 }
 
-func (p *provider) GetResources(_ context.Context) (map[string]tfsdk.ResourceType, diag.Diagnostics) {
-	return map[string]tfsdk.ResourceType{
-		"nested_list":   resourceListType{},
-		"nested_map":    resourceMapType{},
-		"nested_set":    resourceSetType{},
-		"nested_single": resourceSingleType{},
-		"nested_blocks": resourceBlocksType{},
-	}, nil
+func (p *nestedProvider) Configure(_ context.Context, _ provider.ConfigureRequest, _ *provider.ConfigureResponse) {
 }
 
-func (p *provider) GetDataSources(_ context.Context) (map[string]tfsdk.DataSourceType, diag.Diagnostics) {
-	return map[string]tfsdk.DataSourceType{}, nil
+func (p *nestedProvider) Resources(_ context.Context) []func() resource.Resource {
+	return []func() resource.Resource{
+		newResourceBlock,
+		newResourceList,
+		newResourceMap,
+		newResourceSet,
+		newResourceSingle,
+	}
+}
+
+func (p *nestedProvider) DataSources(_ context.Context) []func() datasource.DataSource {
+	return []func() datasource.DataSource{}
 }
