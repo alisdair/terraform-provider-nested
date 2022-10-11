@@ -4,13 +4,12 @@ import (
 	"context"
 
 	"github.com/hashicorp/terraform-plugin-framework/diag"
+	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
-type resourceSetType struct{}
-
-func (r resourceSetType) GetSchema(_ context.Context) (tfsdk.Schema, diag.Diagnostics) {
+func (r *resourceSet) GetSchema(_ context.Context) (tfsdk.Schema, diag.Diagnostics) {
 	return tfsdk.Schema{
 		Attributes: map[string]tfsdk.Attribute{
 			"name": {
@@ -19,19 +18,15 @@ func (r resourceSetType) GetSchema(_ context.Context) (tfsdk.Schema, diag.Diagno
 			},
 			"values": {
 				Optional:   true,
-				Attributes: tfsdk.SetNestedAttributes(valueAttributes, tfsdk.SetNestedAttributesOptions{}),
+				Attributes: tfsdk.SetNestedAttributes(valueAttributes),
 			},
 			"sensitive_values": {
 				Optional:   true,
 				Sensitive:  true,
-				Attributes: tfsdk.SetNestedAttributes(valueAttributes, tfsdk.SetNestedAttributesOptions{}),
+				Attributes: tfsdk.SetNestedAttributes(valueAttributes),
 			},
 		},
 	}, nil
-}
-
-func (r resourceSetType) NewResource(_ context.Context, _ tfsdk.Provider) (tfsdk.Resource, diag.Diagnostics) {
-	return resourceSet{}, nil
 }
 
 type resourceSet struct{}
@@ -42,7 +37,15 @@ type Set struct {
 	SensitiveValues []Value `tfsdk:"sensitive_values"`
 }
 
-func (r resourceSet) Create(ctx context.Context, req tfsdk.CreateResourceRequest, resp *tfsdk.CreateResourceResponse) {
+func newResourceSet() resource.Resource {
+	return &resourceSet{}
+}
+
+func (r *resourceSet) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+	resp.TypeName = req.ProviderTypeName + "_set"
+}
+
+func (r *resourceSet) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
 	var f Set
 	diags := req.Plan.Get(ctx, &f)
 	resp.Diagnostics.Append(diags...)
@@ -57,10 +60,10 @@ func (r resourceSet) Create(ctx context.Context, req tfsdk.CreateResourceRequest
 	}
 }
 
-func (r resourceSet) Read(_ context.Context, _ tfsdk.ReadResourceRequest, _ *tfsdk.ReadResourceResponse) {
+func (r *resourceSet) Read(_ context.Context, _ resource.ReadRequest, _ *resource.ReadResponse) {
 }
 
-func (r resourceSet) Update(ctx context.Context, req tfsdk.UpdateResourceRequest, resp *tfsdk.UpdateResourceResponse) {
+func (r *resourceSet) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 	var f Set
 	diags := req.Plan.Get(ctx, &f)
 	resp.Diagnostics.Append(diags...)
@@ -75,10 +78,6 @@ func (r resourceSet) Update(ctx context.Context, req tfsdk.UpdateResourceRequest
 	}
 }
 
-func (r resourceSet) Delete(ctx context.Context, req tfsdk.DeleteResourceRequest, resp *tfsdk.DeleteResourceResponse) {
+func (r *resourceSet) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
 	resp.State.RemoveResource(ctx)
-}
-
-func (r resourceSet) ImportState(ctx context.Context, req tfsdk.ImportResourceStateRequest, resp *tfsdk.ImportResourceStateResponse) {
-	tfsdk.ResourceImportStateNotImplemented(ctx, "", resp)
 }
